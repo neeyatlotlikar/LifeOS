@@ -1,0 +1,47 @@
+{% extends "cooking/base.html" %}
+
+{% block title %}Recipes — LifeOS{% endblock %}
+
+{% block content %}
+    <h2>Recipes</h2>
+
+    {% if recipes %}
+        <section>
+            {% for recipe in recipes %}
+                <article>
+                    <h3>
+                        <a href="{% url 'cooking:recipe_detail' recipe.pk %}">
+                            {{ recipe.name }}
+                        </a>
+                    </h3>
+
+                    <p>
+                        {{ recipe.description|default:"No description."|linebreaks }}
+                    </p>
+
+                    <dl>
+                        <dt>Diet</dt>
+                        <dd>{{ recipe.get_diet_display }}</dd>
+
+                        <dt>Cuisine</dt>
+                        <dd>
+                            {% if recipe.cuisine %}
+                                {{ recipe.cuisine|join:", " }}
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </dd>
+
+                        <dt>Difficulty</dt>
+                        <dd>{{ recipe.difficulty }}/5</dd>
+
+                        <dt>Added</dt>
+                        <dd>{{ recipe.created_at|date:"d M Y" }}</dd>
+                    </dl>
+                </article>
+            {% endfor %}
+        </section>
+    {% else %}
+        <p>No recipes yet.</p>
+    {% endif %}
+{% endblock %}
