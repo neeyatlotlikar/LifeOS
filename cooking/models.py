@@ -34,3 +34,7 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def cuisine_labels(self):
+        return [value.replace("_", " ").title() for value in self.cuisine]

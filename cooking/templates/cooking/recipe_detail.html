@@ -1,54 +1,43 @@
-{% extends "cooking/base.html" %}
+{% extends "cooking/base.html" %} {% block title %}{{ recipe.name }} — LifeOS{% endblock %} {% block content %}
+<article>
+  <header>
+    <h2>{{ recipe.name }}</h2>
 
-{% block title %}{{ recipe.name }} — LifeOS{% endblock %}
+    <p>{{ recipe.description|linebreaks }}</p>
+  </header>
 
-{% block content %}
-    <article>
-        <header>
-            <h2>{{ recipe.name }}</h2>
+  <section>
+    <h3>Recipe Information</h3>
 
-            <p>{{ recipe.description|linebreaks }}</p>
-        </header>
+    <dl>
+      <dt>Diet</dt>
+      <dd>{{ recipe.get_diet_display }}</dd>
 
-        <section>
-            <h3>Recipe Information</h3>
+      <dt>Cuisine</dt>
+      <dd>
+        {% if recipe.cuisine %} {{ recipe.cuisine|join:", " }} {% else %} Not
+        specified {% endif %}
+      </dd>
 
-            <dl>
-                <dt>Diet</dt>
-                <dd>{{ recipe.get_diet_display }}</dd>
+      <dt>Difficulty</dt>
+      <dd>{{ recipe.difficulty }}/5</dd>
 
-                <dt>Cuisine</dt>
-                <dd>
-                    {% if recipe.cuisine %}
-                        {{ recipe.cuisine|join:", " }}
-                    {% else %}
-                        Not specified
-                    {% endif %}
-                </dd>
+      <dt>Added</dt>
+      <dd>{{ recipe.created_at|date:"d M Y, H:i" }}</dd>
 
-                <dt>Difficulty</dt>
-                <dd>{{ recipe.difficulty }}/5</dd>
+      <dt>Last updated</dt>
+      <dd>{{ recipe.updated_at|date:"d M Y, H:i" }}</dd>
+    </dl>
+  </section>
 
-                <dt>Added</dt>
-                <dd>{{ recipe.created_at|date:"d M Y, H:i" }}</dd>
+  <section>
+    <h3>Instructions</h3>
 
-                <dt>Last updated</dt>
-                <dd>{{ recipe.updated_at|date:"d M Y, H:i" }}</dd>
-            </dl>
-        </section>
+    <div>{{ recipe.instructions|linebreaks }}</div>
+  </section>
 
-        <section>
-            <h3>Instructions</h3>
-
-            <div>
-                {{ recipe.instructions|linebreaks }}
-            </div>
-        </section>
-
-        <p>
-            <a href="{% url 'cooking:recipe_list' %}">
-                ← Back to recipes
-            </a>
-        </p>
-    </article>
+  <p>
+    <a href="{% url 'cooking:recipe_list' %}"> ← Back to recipes </a>
+  </p>
+</article>
 {% endblock %}

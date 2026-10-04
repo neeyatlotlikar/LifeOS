@@ -4,41 +4,72 @@
 
 {% block content %}
     <h2>Recipes</h2>
+    
+    <form method="get">
+        <input
+            type="search"
+            name="q"
+            value="{{ query }}"
+            placeholder="Search recipes..."
+        >
 
+        <select name="diet">
+            <option value="">All diets</option>
+
+            {% for value, label in diet_choices %}
+                <option
+                    value="{{ value }}"
+                    {% if selected_diet == value %}selected{% endif %}
+                >
+                    {{ label }}
+            </option>
+            {% endfor %}
+         </select>
+
+        <select name="cuisine">
+            <option value="">All cuisines</option>
+
+            {% for value, label in cuisine_options %}
+                <option
+                    value="{{ value }}"
+                    {% if selected_cuisine == value %}selected{% endif %}
+                >
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Search</button>
+    
+    </form>
+    
     {% if recipes %}
         <section>
             {% for recipe in recipes %}
-                <article>
-                    <h3>
+                <article class="recipe-card">
+                    <h2>
                         <a href="{% url 'cooking:recipe_detail' recipe.pk %}">
                             {{ recipe.name }}
                         </a>
-                    </h3>
+                    </h2>
 
-                    <p>
-                        {{ recipe.description|default:"No description."|linebreaks }}
-                    </p>
+                    {% if recipe.description %}
+                        <p>{{ recipe.description }}</p>
+                    {% endif %}
 
-                    <dl>
-                        <dt>Diet</dt>
-                        <dd>{{ recipe.get_diet_display }}</dd>
+                    <div class="recipe-meta">
+                        <span>{{ recipe.get_diet_display }}</span>
+                        <span>Difficulty {{ recipe.difficulty }}/5</span>
+                    </div>
 
-                        <dt>Cuisine</dt>
-                        <dd>
-                            {% if recipe.cuisine %}
-                                {{ recipe.cuisine|join:", " }}
-                            {% else %}
-                                Not specified
-                            {% endif %}
-                        </dd>
-
-                        <dt>Difficulty</dt>
-                        <dd>{{ recipe.difficulty }}/5</dd>
-
-                        <dt>Added</dt>
-                        <dd>{{ recipe.created_at|date:"d M Y" }}</dd>
-                    </dl>
+                    <div class="recipe-cuisines">
+                        {% for cuisine in recipe.cuisine_labels %}
+                            <span>{{ cuisine }}</span>
+                        {% endfor %}
+                    </div>
                 </article>
+            {% empty %}
+                <p>No recipes found.</p>
             {% endfor %}
         </section>
     {% else %}

@@ -1,3 +1,5 @@
+import pytest
+
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
@@ -79,3 +81,48 @@ class RecipeModelTests(TestCase):
 
         self.assertIsNotNone(recipe.created_at)
         self.assertIsNotNone(recipe.updated_at)
+
+    def test_cuisine_labels_are_human_readable(self):
+        recipe = Recipe(
+            name="Korean-Italian Fusion",
+            instructions="...",
+            diet=Diet.VEG,
+            cuisine=["korean", "italian"],
+            difficulty=3,
+        )
+
+        assert recipe.cuisine_labels == ["Korean", "Italian"]
+
+
+@pytest.mark.django_db
+def test_recipe_list_returns_200(client):
+    response = client.get("/")
+
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_recipe_list_can_search_by_name(client):
+    Recipe.objects.create(
+        name="Oyakodon",
+        description="Japanese rice bowl",
+        instructions="Cook...",
+        diet=Diet.EGGETARIAN,
+        cuisine=["japanese"],
+        difficulty=2,
+    )
+
+    Recipe.objects.create(
+        name="Palak Paneer",
+        description="Indian spinach and paneer dish",
+        instructions="Cook...",
+        diet=Diet.NON_VEG,
+        cuisine=["indian"],
+        difficulty=2,
+    )
+
+    response = client.get("/", {"q": "oyako"})
+
+    assert response.status_code == 200
+    assert "Oyakodon" in response.content.decode()
+    assert "Palak Paneer" not in response.content.decode()
