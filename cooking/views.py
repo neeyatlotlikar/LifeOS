@@ -1,7 +1,11 @@
+import logging
+
 from django.db import models
 from django.shortcuts import get_object_or_404, render
 
 from .models import Recipe
+
+logger = logging.getLogger(__name__)
 
 
 def recipe_list(request):
@@ -40,6 +44,13 @@ def recipe_list(request):
         ],
     }
 
+    logger.info(
+        "Recipe list view accessed with query='%s', diet='%s', cuisine='%s'",
+        query,
+        diet,
+        cuisine,
+    )
+
     return render(
         request,
         "cooking/recipe_list.html",
@@ -49,6 +60,8 @@ def recipe_list(request):
 
 def recipe_detail(request, pk):
     recipe = get_object_or_404(Recipe, pk=pk)
+
+    logger.info("Recipe detail view accessed for recipe with pk='%s'", pk)
 
     return render(
         request,
